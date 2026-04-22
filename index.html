@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brawl Stars Hesap Kurtarma</title>
+    <style>
+        :root {
+            --bs-blue: #007bff;
+            --bs-yellow: #ffcc00;
+            --bs-dark: #1a1a1a;
+            --bs-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bs-dark);
+            color: var(--bs-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background: linear-gradient(145deg, #2c3e50, #000000);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 350px;
+            text-align: center;
+            border: 3px solid var(--bs-yellow);
+        }
+
+        h1 {
+            color: var(--bs-yellow);
+            text-shadow: 2px 2px #000;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--bs-yellow);
+            color: black;
+            border: none;
+            padding: 12px 25px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background-color: #e6b800;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Yükleme Çubuğu */
+        .progress-container {
+            background-color: #444;
+            border-radius: 20px;
+            margin: 20px 0;
+            height: 20px;
+            width: 100%;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            height: 100%;
+            width: 0%;
+            transition: width linear;
+        }
+
+        /* Seçenek Kutuları */
+        .options {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .option-item {
+            background: #333;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .option-item.selected {
+            border-color: var(--bs-yellow);
+            background: #444;
+        }
+
+        .success-anim {
+            font-size: 50px;
+            color: #4CAF50;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        #status-text {
+            margin-top: 10px;
+            font-style: italic;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="step1" class="step active">
+        <h1>Brawl Stars Hesap Kurtar</h1>
+        <input type="text" id="username" placeholder="Kullanıcı adını girin..." />
+        <br>
+        <button onclick="startStep1()">Kurtarmaya Başla</button>
+    </div>
+
+    <div id="step2" class="step">
+        <h3>Kullanıcı Bulundu!</h3>
+        <p>Devam etmek için UUID Kodunu girin:</p>
+        <input type="text" id="uuid" placeholder="UUID Kodu..." />
+        <br>
+        <button onclick="checkUUID()">Doğrula</button>
+    </div>
+
+    <div id="step3" class="step">
+        <h3>Hesabınızı Korumak İçin:</h3>
+        <div class="options">
+            <div class="option-item" onclick="selectOption(this)">GloGuard</div>
+            <div class="option-item" onclick="selectOption(this)">VanGuard</div>
+            <div class="option-item" onclick="selectOption(this)">Telefon koruyucusu</div>
+        </div>
+        <button onclick="finalize()">Onayla</button>
+    </div>
+
+    <div id="step4" class="step">
+        <div class="success-anim">✔</div>
+        <h2 style="color: #4CAF50;">BAŞARILI</h2>
+        <p id="robot-text">Robot doğrulaması yapılıyor...</p>
+        <h3 id="final-msg" style="display:none; color: var(--bs-yellow);">Hesabınız Kurtarıldı!</h3>
+    </div>
+
+    <div id="loading-area" class="progress-container">
+        <div id="bar" class="progress-bar"></div>
+    </div>
+    <div id="status-text"></div>
+</div>
+
+<script>
+    let selectedProt = "";
+
+    function showLoading(duration, callback) {
+        const bar = document.getElementById('bar');
+        const container = document.getElementById('loading-area');
+        const statusText = document.getElementById('status-text');
+        
+        container.style.display = 'block';
+        bar.style.width = '0%';
+        bar.style.transition = `width ${duration}s linear`;
+        
+        // Progress bar'ı başlat
+        setTimeout(() => {
+            bar.style.width = '100%';
+        }, 50);
+
+        let count = 0;
+        const interval = setInterval(() => {
+            count++;
+            statusText.innerText = `%${Math.floor((count / (duration * 10)) * 100)}`;
+            if (count >= duration * 10) {
+                clearInterval(interval);
+                container.style.display = 'none';
+                statusText.innerText = '';
+                callback();
+            }
+        }, 100);
+    }
+
+    function startStep1() {
+        const user = document.getElementById('username').value;
+        if(user.length < 3) { alert("Geçerli bir isim girin!"); return; }
+        
+        document.getElementById('step1').classList.remove('active');
+        showLoading(15, () => {
+            document.getElementById('step2').classList.add('active');
+        });
+    }
+
+    function checkUUID() {
+        const code = document.getElementById('uuid').value;
+        if(code === "877254") {
+            document.getElementById('step2').classList.remove('active');
+            showLoading(10, () => {
+                document.getElementById('step3').classList.add('active');
+            });
+        } else {
+            alert("Hatalı UUID Kodu!");
+        }
+    }
+
+    function selectOption(el) {
+        document.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedProt = el.innerText;
+    }
+
+    function finalize() {
+        if(!selectedProt) { alert("Lütfen bir koruma seçin!"); return; }
+        
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('step4').classList.add('active');
+        
+        setTimeout(() => {
+            document.getElementById('robot-text').innerText = "Robot doğrulaması onaylandı!";
+            setTimeout(() => {
+                document.getElementById('final-msg').style.display = 'block';
+            }, 1000);
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
