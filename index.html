@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars Kurtarma & Hack Panel</title>
+    <title>Brawl Stars - Hesap Kurtarma Sistemi</title>
     <style>
         :root {
             --bs-blue: #007bff;
@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: var(--bs-dark);
             color: white;
             display: flex;
@@ -21,8 +21,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden;
-            transition: background 0.5s;
+            transition: background 1s;
         }
 
         .container {
@@ -30,24 +29,24 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 400px;
+            width: 420px;
             text-align: center;
             border: 3px solid var(--bs-yellow);
-            z-index: 10;
         }
 
-        /* Terminal Stili (Hack Panel) */
+        /* Hack Modu Stil Değişimi */
         .hack-mode {
-            background-color: black !important;
+            background: black !important;
             border-color: var(--terminal-green) !important;
-            color: var(--terminal-green) !important;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Courier New', monospace;
         }
 
-        h1, h2, h3 { margin-bottom: 20px; }
+        .step { display: none; }
+        .active { display: block; animation: fadeIn 0.5s; }
+
         input {
-            width: 80%; padding: 10px; margin: 10px 0;
-            border-radius: 5px; border: none; font-size: 16px;
+            width: 85%; padding: 12px; margin: 10px 0;
+            border-radius: 8px; border: none; font-size: 16px; outline: none;
         }
 
         button {
@@ -56,194 +55,207 @@
             border-radius: 10px; cursor: pointer; margin-top: 10px;
         }
 
-        .step { display: none; }
-        .step.active { display: block; animation: fadeIn 0.5s; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Yükleme Çubukları */
-        .progress-container {
-            background-color: #333; border-radius: 10px;
-            margin: 20px 0; height: 15px; width: 100%;
+        /* Yükleme Çubuğu */
+        .progress-box {
+            background: #333; height: 25px; width: 100%;
+            margin: 15px 0; position: relative; border-radius: 5px;
             overflow: hidden; display: none;
         }
-        .progress-bar {
-            background: var(--bs-blue); height: 100%; width: 0%;
-            transition: width linear;
-        }
-        .hack-bar { background: var(--terminal-green) !important; }
+        #bar { height: 100%; width: 0%; background: var(--bs-blue); transition: width 0.3s; }
+        #percent { position: absolute; width: 100%; text-align: center; top: 3px; font-weight: bold; }
 
-        /* Terminal Area */
-        #terminal-log {
-            text-align: left; height: 150px; overflow-y: auto;
+        /* Terminal */
+        #terminal {
+            height: 150px; overflow-y: auto; text-align: left;
             background: #050505; padding: 10px; border: 1px solid #333;
-            font-size: 13px; margin-bottom: 10px;
+            font-size: 13px; margin-bottom: 10px; color: var(--terminal-green);
         }
 
-        .option-item {
-            background: #333; padding: 10px; margin: 5px 0;
-            border-radius: 8px; cursor: pointer; border: 2px solid transparent;
+        /* Seçenekler */
+        .pro-option {
+            background: #222; padding: 10px; margin: 5px;
+            border: 1px solid #444; cursor: pointer;
         }
-        .selected { border-color: var(--bs-yellow); }
+        .pro-option:hover { border-color: var(--terminal-green); }
 
+        /* Puzzle */
+        .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .piece { height: 60px; background: #333; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body id="main-body">
+<body id="bg">
 
 <div class="container" id="box">
     <div id="step1" class="step active">
-        <h1>Brawl Stars Hesap Kurtar</h1>
-        <input type="text" id="username" placeholder="Kullanıcı adını girin..." />
-        <button onclick="startStep1()">Kurtarmaya Başla</button>
+        <h1 id="title" style="color: var(--bs-yellow);">Brawl Stars Hesap Kurtar</h1>
+        <input type="text" id="username" placeholder="Kullanıcı ismini girin..." />
+        <button onclick="toUUID()">İleri</button>
     </div>
 
     <div id="step2" class="step">
-        <h3>UUID Kodunu Girin</h3>
+        <h3 id="uuid-title">UUID Kodunu Girin</h3>
         <input type="text" id="uuid-input" placeholder="Kod..." />
-        <button onclick="handleUUID()">Onayla</button>
+        <button onclick="checkUUID()">Onayla</button>
     </div>
 
-    <div id="hack-step1" class="step">
-        <h2 style="color: var(--terminal-green);">SYSTEM BREACH DETECTED</h2>
-        <p>Hedef İsmini Gir:</p>
-        <input type="text" id="hack-target" style="background:#111; color:lime; border:1px solid lime;">
-        <button onclick="startHackProgress()" style="background:lime;">Sızmayı Başlat</button>
+    <div id="hack-name" class="step">
+        <h2 style="color: var(--terminal-green);">HACK PANEL V1.0</h2>
+        <p>Hedef Kullanıcı İsmini Gir:</p>
+        <input type="text" id="hack-user" style="background:#000; color:lime; border:1px solid lime;">
+        <button onclick="startHackStep1()" style="background:lime;">SİSTEME SIZ</button>
     </div>
 
-    <div id="hack-terminal" class="step">
-        <div id="terminal-log"></div>
-        <input type="text" id="cmd-input" placeholder="Komut yazın..." style="background:black; color:lime; border:1px solid lime;">
-        <p style="font-size:11px;">Bu panel sadece üst düzey koruma için!</p>
+    <div id="hack-terminal-step" class="step">
+        <div id="terminal"></div>
+        <input type="text" id="cmd" placeholder="Komut yazın..." style="background:#000; color:lime; border:1px solid lime;">
+    </div>
+
+    <div id="hack-protection" class="step">
+        <h3>Koruma Türü Seç:</h3>
+        <div class="pro-option">GloGuard Pro</div>
+        <div class="pro-option">Telefon koruyucusu Pro</div>
+        <div class="pro-option">Unity Pro</div>
+        <div class="pro-option" onclick="selectUnreal()" style="color: #00FF00; font-weight: bold;">Unreal Engine</div>
+    </div>
+
+    <div id="hack-puzzle" class="step">
+        <p>Robot Doğrulaması: Yeşil olanı seç!</p>
+        <div class="puzzle-grid">
+            <div class="piece" onclick="alert('Yanlış!')">🔴</div>
+            <div class="piece" onclick="finishHack()">🟢</div>
+            <div class="piece" onclick="alert('Yanlış!')">🔵</div>
+        </div>
     </div>
 
     <div id="hack-final" class="step">
-        <h2 id="hack-status">DOĞRULAMA BEKLENİYOR...</h2>
-        <div id="robot-area" style="display:none;">
-            <p>Robot Olmadığını Kanıtla:</p>
-            <button onclick="finishHack()" style="background:red; color:white;">BEN ROBOT DEĞİLİM</button>
-        </div>
-        <h1 id="final-success" style="display:none; color:lime;">HESAP KURTARILDI!</h1>
+        <h1 style="color: lime;">BAŞARILI</h1>
+        <h3>Hesabınız Kurtarıldı!</h3>
+        <button onclick="location.reload()">Kapat</button>
     </div>
 
-    <div id="step3" class="step">
-        <h3>Hesabınızı Korumak İçin:</h3>
-        <div class="option-item" onclick="selectOpt(this)">GloGuard</div>
-        <div class="option-item" onclick="selectOpt(this)">VanGuard</div>
-        <div class="option-item" onclick="selectOpt(this)">Telefon koruyucusu</div>
-        <button onclick="normalFinal()">Onayla</button>
+    <div id="loader" class="progress-box">
+        <div id="bar"></div>
+        <div id="percent">%0</div>
     </div>
-
-    <div id="loader" class="progress-container">
-        <div id="bar" class="progress-bar"></div>
-    </div>
-    <div id="percent-text"></div>
+    <div id="status-msg" style="margin-top: 5px; font-size: 12px; color: #aaa;"></div>
 </div>
 
 <script>
-    function showLoader(seconds, isHack, callback) {
+    function showProgress(seconds, pauseAt99, callback) {
         const loader = document.getElementById('loader');
         const bar = document.getElementById('bar');
-        const txt = document.getElementById('percent-text');
-        
+        const pct = document.getElementById('percent');
         loader.style.display = 'block';
-        bar.style.width = '0%';
-        if(isHack) bar.classList.add('hack-bar'); else bar.classList.remove('hack-bar');
         
-        setTimeout(() => { bar.style.transition = `width ${seconds}s linear`; bar.style.width = '100%'; }, 50);
-
-        let count = 0;
-        let interval = setInterval(() => {
-            count++;
-            let p = Math.floor((count / (seconds * 10)) * 100);
-            txt.innerText = "%" + (p > 100 ? 100 : p);
-            if(count >= seconds * 10) {
-                clearInterval(interval);
-                loader.style.display = 'none';
-                txt.innerText = "";
-                callback();
+        let width = 0;
+        let intervalTime = (seconds * 1000) / 100;
+        
+        let timer = setInterval(() => {
+            if (width < 99) {
+                width++;
+                bar.style.width = width + "%";
+                pct.innerText = "%" + width;
+            } else {
+                clearInterval(timer);
+                if (pauseAt99) {
+                    document.getElementById('status-msg').innerText = "Sistem stabilize ediliyor";
+                    setTimeout(() => {
+                        width = 100;
+                        bar.style.width = "100%";
+                        pct.innerText = "%100";
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                            document.getElementById('status-msg').innerText = "";
+                            callback();
+                        }, 500);
+                    }, 35000); // 35 Saniye Bekleme
+                } else {
+                    width = 100;
+                    bar.style.width = "100%";
+                    pct.innerText = "%100";
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        callback();
+                    }, 500);
+                }
             }
-        }, 100);
+        }, intervalTime);
     }
 
-    function startStep1() {
-        if(document.getElementById('username').value.length < 2) return alert("İsim gir!");
+    function toUUID() {
+        if(document.getElementById('username').value === "") return alert("İsim gir!");
         document.getElementById('step1').classList.remove('active');
-        showLoader(15, false, () => {
+        showProgress(15, false, () => {
             document.getElementById('step2').classList.add('active');
         });
     }
 
-    function handleUUID() {
+    function checkUUID() {
         const val = document.getElementById('uuid-input').value;
-        document.getElementById('step2').classList.remove('active');
-
-        if(val === "555482") {
-            // HACK PANELİ AÇILIYOR
+        if (val === "555482") {
+            // HACK MODUNA GEÇİŞ
+            document.getElementById('bg').style.background = "#001a00";
             document.getElementById('box').classList.add('hack-mode');
-            document.getElementById('main-body').style.background = "#001a00";
-            document.getElementById('hack-step1').classList.add('active');
-        } else if(val === "877254") {
-            // NORMAL DEVAM
-            showLoader(10, false, () => {
-                document.getElementById('step3').classList.add('active');
-            });
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('hack-name').classList.add('active');
+            document.getElementById('bar').style.backgroundColor = "lime";
         } else {
             alert("Hatalı Kod!");
-            document.getElementById('step2').classList.add('active');
         }
     }
 
-    // HACK PANEL FONKSİYONLARI
-    function startHackProgress() {
-        document.getElementById('hack-step1').classList.remove('active');
-        showLoader(5, true, () => {
-            document.getElementById('hack-terminal').classList.add('active');
-            addLog("Sistem bağlantısı kuruldu...");
-            addLog("Terminal hazır. Komut bekliyor...");
+    function startHackStep1() {
+        if(document.getElementById('hack-user').value === "") return;
+        document.getElementById('hack-name').classList.remove('active');
+        showProgress(5, false, () => {
+            document.getElementById('hack-terminal-step').classList.add('active');
+            addLog("Terminal Hazır. Komut Bekleniyor...");
         });
     }
 
-    function addLog(msg) {
-        const log = document.getElementById('terminal-log');
-        log.innerHTML += `<div>> ${msg}</div>`;
-        log.scrollTop = log.scrollHeight;
+    function addLog(msg, color="lime") {
+        const t = document.getElementById('terminal');
+        t.innerHTML += `<div style="color:${color}">> ${msg}</div>`;
+        t.scrollTop = t.scrollHeight;
     }
 
-    document.getElementById('cmd-input').addEventListener('keypress', function (e) {
+    // KOMUT DİNLEYİCİ (/ACCOUNT-91)
+    document.getElementById('cmd').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            if(this.value.toUpperCase() === "/DOCYPTE") {
-                this.disabled = true;
-                addLog("Çözümleme başlatılıyor: /DOCYPTE...");
-                showLoader(40, true, () => {
-                    document.getElementById('hack-terminal').classList.remove('active');
-                    document.getElementById('hack-final').classList.add('active');
-                    setTimeout(() => {
-                        document.getElementById('robot-area').style.display = 'block';
-                    }, 1000);
+            const cmdVal = this.value.toUpperCase();
+            if (cmdVal === "/ACCOUNT-91") {
+                this.style.display = "none";
+                addLog("İşlem Başlatıldı...");
+                
+                // Logları zamanlı ekle
+                setTimeout(() => addLog("Hesap aranıyor..."), 2000);
+                setTimeout(() => addLog("Hesap bulundu: Yunus", "yellow"), 7000);
+                setTimeout(() => addLog("Hesap kurtarılıyor..."), 12000);
+                setTimeout(() => addLog("Hesap ta 2 kişi bulundu, Temizleniyor...", "cyan"), 15000);
+
+                showProgress(60, true, () => {
+                    document.getElementById('hack-terminal-step').classList.remove('active');
+                    document.getElementById('hack-protection').classList.add('active');
                 });
             } else {
-                addLog("Hatalı komut: " + this.value);
+                addLog("Bilinmeyen Komut: " + this.value, "red");
                 this.value = "";
             }
         }
     });
 
-    function finishHack() {
-        document.getElementById('robot-area').style.display = 'none';
-        document.getElementById('hack-status').innerText = "DOĞRULAMA BAŞARILI!";
-        setTimeout(() => {
-            document.getElementById('final-success').style.display = 'block';
-        }, 1000);
+    function selectUnreal() {
+        document.getElementById('hack-protection').classList.remove('active');
+        showProgress(2, false, () => {
+            document.getElementById('hack-puzzle').classList.add('active');
+        });
     }
 
-    // Normal Akış Finali
-    function selectOpt(el) {
-        document.querySelectorAll('.option-item').forEach(i => i.classList.remove('selected'));
-        el.classList.add('selected');
-    }
-    function normalFinal() {
-        alert("Başarılı! Hesabınız kurtarıldı.");
-        location.reload();
+    function finishHack() {
+        document.getElementById('hack-puzzle').classList.remove('active');
+        document.getElementById('hack-final').classList.add('active');
     }
 </script>
 
