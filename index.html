@@ -1,248 +1,445 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Brawl Stars - Recovery Center</title>
     <style>
         :root {
             --bs-blue: #007bff;
             --bs-yellow: #ffcc00;
             --bs-dark: #1a1a1a;
-            --terminal-green: #00FF00;
+            --terminal-green: #00ff7a;
             --error-red: #ff3333;
+            --ultra-gold: #ffd54a;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bs-dark);
+            font-family: "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #252525, var(--bs-dark));
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            transition: background 0.5s;
+            transition: background 0.5s ease;
+            overflow: hidden;
         }
 
         .container {
             background: linear-gradient(145deg, #2c3e50, #000000);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 450px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: min(92vw, 520px);
             text-align: center;
             border: 3px solid var(--bs-yellow);
             position: relative;
         }
 
         .step { display: none; }
-        .active { display: block; animation: fadeIn 0.5s; }
+        .active { display: block; animation: fadeIn 0.45s ease; }
+
+        h1, h2, h3, p { margin-top: 0; }
 
         input {
-            width: 85%; padding: 12px; margin: 10px 0;
-            border-radius: 8px; border: none; font-size: 16px; outline: none;
-            background: #eee; color: #333;
+            width: 88%;
+            padding: 12px 14px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+            background: #efefef;
+            color: #222;
         }
 
         button {
-            background-color: var(--bs-yellow); color: black;
-            border: none; padding: 12px 25px; font-weight: bold;
-            border-radius: 10px; cursor: pointer; margin-top: 10px;
+            background-color: var(--bs-yellow);
+            color: black;
+            border: none;
+            padding: 12px 25px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.15s ease, filter 0.15s ease;
         }
 
-        /* Yükleme Çubuğu */
+        button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+        button:active { transform: translateY(0); }
+
         .progress-box {
-            background: #333; height: 30px; width: 100%;
-            margin: 15px 0; position: relative; border-radius: 5px;
-            overflow: hidden; display: none;
+            background: #333;
+            height: 30px;
+            width: 100%;
+            margin: 15px 0;
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.15);
         }
-        #bar { height: 100%; width: 0%; background: var(--bs-blue); transition: width 0.2s linear; }
-        #percent { position: absolute; width: 100%; text-align: center; top: 5px; font-weight: bold; mix-blend-mode: difference; }
 
-        /* Terminal Stilleri */
+        #bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00b4ff, #00ff9d);
+            transition: width 0.15s linear;
+        }
+
+        #percent {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            mix-blend-mode: difference;
+            text-shadow: 0 0 8px rgba(0,0,0,0.8);
+        }
+
         .terminal-screen {
-            height: 200px; overflow-y: auto; text-align: left;
-            background: #050505; padding: 10px; border: 1px solid #444;
-            font-size: 14px; margin-bottom: 10px; font-family: monospace;
+            height: 230px;
+            overflow-y: auto;
+            text-align: left;
+            background: #050505;
+            padding: 12px;
+            border: 1px solid #444;
+            font-size: 14px;
+            margin: 12px 0 10px;
+            font-family: Consolas, "Courier New", monospace;
+            border-radius: 12px;
+            box-shadow: inset 0 0 14px rgba(0,0,0,0.6);
         }
 
-        .help-link { color: #aaa; text-decoration: underline; cursor: pointer; font-size: 13px; margin-top: 15px; display: block; }
+        .terminal-line {
+            line-height: 1.55;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .prompt-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .prompt {
+            color: #59ff84;
+            font-family: Consolas, "Courier New", monospace;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        #terminal-input {
+            width: 100%;
+            background: #000;
+            color: #00ff7a;
+            border: 1px solid #00ff7a;
+            margin: 0;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .help-link {
+            color: #aaa;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
         .help-link:hover { color: white; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .ultra-title {
+            font-size: clamp(34px, 6vw, 56px);
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: var(--ultra-gold);
+            text-shadow:
+                0 0 10px rgba(255, 213, 74, 0.9),
+                0 0 24px rgba(255, 213, 74, 0.75),
+                0 0 45px rgba(255, 120, 0, 0.35);
+            animation: ultraPulse 1.2s infinite alternate;
+            margin-bottom: 6px;
+        }
+
+        .ultra-subtitle {
+            color: #d7d7d7;
+            margin-bottom: 10px;
+        }
+
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            overflow: hidden;
+            opacity: 0.7;
+        }
+
+        .glitch::before {
+            transform: translate(2px, -1px);
+            color: #00d5ff;
+            animation: glitch 1.8s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            transform: translate(-2px, 1px);
+            color: #ff3d7f;
+            animation: glitch 1.4s infinite linear alternate-reverse;
+        }
+
+        .saved-message {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--terminal-green);
+            text-shadow: 0 0 12px rgba(0,255,122,0.7);
+        }
+
+        .status-msg {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+            min-height: 16px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes ultraPulse { from { transform: scale(1); filter: brightness(1); } to { transform: scale(1.02); filter: brightness(1.18); } }
+        @keyframes glitch {
+            0% { clip-path: inset(0 0 92% 0); }
+            20% { clip-path: inset(18% 0 45% 0); }
+            40% { clip-path: inset(55% 0 22% 0); }
+            60% { clip-path: inset(8% 0 74% 0); }
+            80% { clip-path: inset(38% 0 36% 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        .blink {
+            animation: blink 1s steps(1, end) infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body id="bg">
+    <div class="container" id="box">
+        <div id="step1" class="step active">
+            <h1 style="color: var(--bs-yellow);">Brawl Stars Hesap Kurtar</h1>
+            <input type="text" id="username" placeholder="Kullanıcı ismini girin..." />
+            <button onclick="startApp()">İleri</button>
+        </div>
 
-<div class="container" id="box">
-    <div id="step1" class="step active">
-        <h1 style="color: var(--bs-yellow);">Brawl Stars Hesap Kurtar</h1>
-        <input type="text" id="username" placeholder="Kullanıcı ismini girin..." />
-        <button onclick="startApp()">İleri</button>
-    </div>
+        <div id="step2" class="step">
+            <h3>UUID Kodunu Girin</h3>
+            <input type="text" id="uuid-input" placeholder="Kod..." />
+            <button onclick="checkUUID()">Onayla</button>
+        </div>
 
-    <div id="step2" class="step">
-        <h3>UUID Kodunu Girin</h3>
-        <input type="text" id="uuid-input" placeholder="Kod..." />
-        <button onclick="checkUUID()">Onayla</button>
-    </div>
+        <div id="ultra-step" class="step">
+            <div class="ultra-title glitch" data-text="ULTRA">ULTRA</div>
+            <div class="ultra-subtitle">Terminal bağlantısı kuruluyor...</div>
 
-    <div id="opera-step" class="step">
-        <h2 style="color: #ff4500;">OPERA TERMINAL</h2>
-        <div id="opera-log" class="terminal-screen"></div>
-        <input type="text" id="opera-cmd" placeholder="You has been" style="background:#000; color:#ff4500; border:1px solid #ff4500;">
-        <div id="fail-area" style="display:none;">
-            <p style="color: var(--error-red); font-weight: bold;">BAŞARISIZ</p>
-            <span class="help-link" onclick="goToTroubleshoot()">Sorun mu yaşıyorsun?</span>
+            <div id="ultra-log" class="terminal-screen"></div>
+
+            <div class="prompt-row">
+                <span class="prompt">&gt;</span>
+                <input type="text" id="terminal-input" placeholder="Komudu yazın..." />
+            </div>
+
+            <div id="loader" class="progress-box">
+                <div id="bar"></div>
+                <div id="percent">%0</div>
+            </div>
+            <div id="status-msg" class="status-msg"></div>
+        </div>
+
+        <div id="final-step" class="step">
+            <div class="saved-message">HESAP KURTARILDI</div>
+            <p>İşlem başarıyla tamamlandı.</p>
+            <button onclick="location.reload()">Başa Dön</button>
         </div>
     </div>
 
-    <div id="troubleshoot-step" class="step">
-        <h3>Sistem Kurtarma</h3>
-        <p>Devam etmek için isminizi girin:</p>
-        <input type="text" id="ts-name" placeholder="İsim..." />
-        <button onclick="startTSProgress()">Kurtarmayı Başlat</button>
-    </div>
+    <script>
+        const step1 = document.getElementById("step1");
+        const step2 = document.getElementById("step2");
+        const ultraStep = document.getElementById("ultra-step");
+        const finalStep = document.getElementById("final-step");
+        const log = document.getElementById("ultra-log");
+        const terminalInput = document.getElementById("terminal-input");
+        const loader = document.getElementById("loader");
+        const bar = document.getElementById("bar");
+        const pct = document.getElementById("percent");
+        const msg = document.getElementById("status-msg");
 
-    <div id="gmail-step" class="step">
-        <h3>Hesap Doğrulama</h3>
-        <p>Hesap kurtarmak için Gmailinizi girin:</p>
-        <input type="email" id="user-gmail" placeholder="Örn: ornek@gmail.com" />
-        <button onclick="goToCode()">İleri</button>
-    </div>
+        let saveRunning = false;
+        let saveInterval = null;
+        let saveTimeout = null;
 
-    <div id="code-step" class="step">
-        <p><b>akbulutyunus797@gmail.com</b> hesabına gelen 6 haneli kodu girin.</p>
-        <input type="text" id="gmail-code" placeholder="6 Haneli Kod" maxlength="6" />
-        <button onclick="checkGmailCode()">Kodu Doğrula</button>
-    </div>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
-    <div id="final-step" class="step">
-        <h1 style="color: var(--terminal-green);">HESAP KURTARILDI</h1>
-        <p>İşlem başarıyla tamamlandı.</p>
-        <button onclick="location.reload()">Başa Dön</button>
-    </div>
+        function addLine(text, color = "#d7d7d7") {
+            const div = document.createElement("div");
+            div.className = "terminal-line";
+            div.style.color = color;
+            div.textContent = text;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
 
-    <div id="loader" class="progress-box">
-        <div id="bar"></div>
-        <div id="percent">%0</div>
-    </div>
-    <div id="status-msg" style="font-size: 12px; color: #aaa; margin-top: 5px;"></div>
-</div>
+        async function typeLine(text, color = "#d7d7d7", speed = 18) {
+            const div = document.createElement("div");
+            div.className = "terminal-line";
+            div.style.color = color;
+            log.appendChild(div);
 
-<script>
-    const bar = document.getElementById('bar');
-    const pct = document.getElementById('percent');
-    const loader = document.getElementById('loader');
-    const msg = document.getElementById('status-msg');
-
-    function showProgress(durationSec, pausePoint, pauseDurationSec, callback) {
-        loader.style.display = 'block';
-        let currentWidth = 0;
-        let totalSteps = 100;
-        let stepTime = (durationSec * 1000) / totalSteps;
-
-        let interval = setInterval(() => {
-            if (currentWidth < pausePoint) {
-                currentWidth++;
-                bar.style.width = currentWidth + "%";
-                pct.innerText = "%" + currentWidth;
-            } else {
-                clearInterval(interval);
-                if (pauseDurationSec > 0) {
-                    msg.innerText = "Lütfen bekleyin...";
-                    setTimeout(() => {
-                        msg.innerText = "";
-                        completeProgress(callback);
-                    }, pauseDurationSec * 1000);
-                } else {
-                    completeProgress(callback);
-                }
+            for (let i = 0; i <= text.length; i++) {
+                div.textContent = text.slice(0, i) + (i < text.length ? "▌" : "");
+                log.scrollTop = log.scrollHeight;
+                await sleep(speed);
             }
-        }, stepTime);
-    }
-
-    function completeProgress(callback) {
-        bar.style.width = "100%";
-        pct.innerText = "%100";
-        setTimeout(() => {
-            loader.style.display = 'none';
-            callback();
-        }, 500);
-    }
-
-    function startApp() {
-        if(document.getElementById('username').value === "") return;
-        document.getElementById('step1').classList.remove('active');
-        showProgress(15, 100, 0, () => {
-            document.getElementById('step2').classList.add('active');
-        });
-    }
-
-    function checkUUID() {
-        const val = document.getElementById('uuid-input').value;
-        document.getElementById('step2').classList.remove('active');
-
-        if (val === "981648") {
-            document.getElementById('bg').style.background = "#1a0000";
-            document.getElementById('box').style.borderColor = "#ff4500";
-            document.getElementById('opera-step').classList.add('active');
-        } else {
-            alert("Sistem hatası veya geçersiz kod!");
         }
-    }
 
-    // OPERA SENARYOSU
-    document.getElementById('opera-cmd').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && this.value.toUpperCase() === "/OPERA") {
-            this.style.display = "none";
-            const log = document.getElementById('opera-log');
-            log.innerHTML += `<div>> Hesap aranıyor...</div>`;
-            setTimeout(() => {
-                log.innerHTML += `<div style="color:yellow">> Hesap Bulundu: yunus.</div>`;
+        function showProgressBar() {
+            loader.style.display = "block";
+            bar.style.width = "0%";
+            pct.textContent = "%0";
+            msg.textContent = "";
+        }
+
+        function resetProgress() {
+            loader.style.display = "none";
+            bar.style.width = "0%";
+            pct.textContent = "%0";
+            msg.textContent = "";
+        }
+
+        function startApp() {
+            if (document.getElementById("username").value.trim() === "") return;
+            step1.classList.remove("active");
+            step2.classList.add("active");
+        }
+
+        async function checkUUID() {
+            const val = document.getElementById("uuid-input").value.trim();
+            if (val !== "92375") {
+                alert("Sistem hatası veya geçersiz kod!");
+                return;
+            }
+
+            step2.classList.remove("active");
+            document.getElementById("bg").style.background = "radial-gradient(circle at top, #2b1600, #000)";
+            document.getElementById("box").style.borderColor = "#ffb347";
+
+            ultraStep.classList.add("active");
+            log.innerHTML = "";
+            addLine("> UUID doğrulandı: 92375", "#00ff7a");
+            await sleep(450);
+            await typeLine("> ULTRA terminal başlatılıyor...", "#ffd54a", 20);
+            await typeLine("> Güvenli mod açıldı.", "#8be9fd", 20);
+            await typeLine("> Komutlar yükleniyor...", "#cccccc", 20);
+            terminalInput.focus();
+        }
+
+        async function runHelp() {
+            addLine("> /Yardım komutu algılandı.", "#59ff84");
+            await sleep(250);
+            await typeLine("Yardım Menüsü:", "#ffd54a", 18);
+            await typeLine("- UJ7dfısfwıe73wı", "#d7d7d7", 16);
+            await typeLine("- U6dsusydıf4", "#d7d7d7", 16);
+            await typeLine("- sad387G8jf", "#d7d7d7", 16);
+        }
+
+        async function runBrawl() {
+            addLine("> /Brawl komutu algılandı.", "#59ff84");
+            await sleep(250);
+            await typeLine("Brawl çekirdeği aktif.", "#ffd54a", 18);
+            await typeLine("Komutlar:", "#8be9fd", 18);
+            await typeLine("- match.scan", "#d7d7d7", 16);
+            await typeLine("- sync.player", "#d7d7d7", 16);
+            await typeLine("- unlock.ultra", "#d7d7d7", 16);
+            await typeLine("- save.core", "#d7d7d7", 16);
+        }
+
+        function startSave() {
+            if (saveRunning) return;
+            saveRunning = true;
+
+            addLine("> /Save komutu algılandı.", "#59ff84");
+            addLine("> Yeni kayıt alanına geçiliyor...", "#ffd54a");
+            showProgressBar();
+
+            const totalMs = 30000;
+            const start = Date.now();
+
+            saveInterval = setInterval(() => {
+                const elapsed = Date.now() - start;
+                const progress = Math.min(100, Math.floor((elapsed / totalMs) * 100));
+                bar.style.width = progress + "%";
+                pct.textContent = "%" + progress;
+                msg.textContent = "Kurtarma işlemi sürüyor...";
+
+                if (progress >= 100) {
+                    clearInterval(saveInterval);
+                    saveInterval = null;
+                }
+            }, 120);
+
+            saveTimeout = setTimeout(() => {
+                if (saveInterval) clearInterval(saveInterval);
+                bar.style.width = "100%";
+                pct.textContent = "%100";
+                msg.textContent = "Hesap kurtarıldı.";
                 setTimeout(() => {
-                    log.innerHTML += `<div style="color:red">> Hesap temizlenemedi!</div>`;
-                    document.getElementById('fail-area').style.display = 'block';
-                }, 2000);
-            }, 2000);
+                    ultraStep.classList.remove("active");
+                    finalStep.classList.add("active");
+                }, 700);
+            }, totalMs);
         }
-    });
 
-    function goToTroubleshoot() {
-        document.getElementById('opera-step').classList.remove('active');
-        document.getElementById('troubleshoot-step').classList.add('active');
-    }
+        async function handleCommand(raw) {
+            const cmd = raw.trim();
+            if (!cmd) return;
 
-    function startTSProgress() {
-        if(document.getElementById('ts-name').value === "") return;
-        document.getElementById('troubleshoot-step').classList.remove('active');
-        // 1 Saniyede dolan ama 99.99999'da 20 saniye bekleyen bar
-        showProgress(1, 99.9, 20, () => {
-            document.getElementById('gmail-step').classList.add('active');
+            addLine("> " + cmd, "#8be9fd");
+
+            const normalized = cmd.toLowerCase();
+            if (normalized === "/yardım" || normalized === "/yardim") {
+                await runHelp();
+            } else if (normalized === "/brawl") {
+                await runBrawl();
+            } else if (normalized === "/save") {
+                startSave();
+            } else {
+                addLine("> Bilinmeyen komut. /Yardım yazın.", "#ffb347");
+            }
+        }
+
+        terminalInput.addEventListener("keydown", async function (e) {
+            if (e.key !== "Enter") return;
+            if (saveRunning) {
+                terminalInput.value = "";
+                return;
+            }
+
+            const value = terminalInput.value;
+            terminalInput.value = "";
+            await handleCommand(value);
         });
-        pct.innerText = "%99.99999"; // Özel metin
-    }
-
-    function goToCode() {
-        if(document.getElementById('user-gmail').value === "") return;
-        document.getElementById('gmail-step').classList.remove('active');
-        document.getElementById('code-step').classList.add('active');
-    }
-
-    function checkGmailCode() {
-        if(document.getElementById('gmail-code').value === "628888") {
-            document.getElementById('code-step').classList.remove('active');
-            // 2 Dakika (120 saniye) süren, 1 dakikası (60 sn) 99'da geçen bar
-            msg.innerText = "Son işlemler yapılıyor...";
-            showProgress(60, 99, 60, () => {
-                document.getElementById('final-step').classList.add('active');
-            });
-        } else {
-            alert("Hatalı kod!");
-        }
-    }
-</script>
-
+    </script>
 </body>
 </html>
