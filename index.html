@@ -1,445 +1,308 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Brawl Stars - Recovery Center</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Brawl Stars Hesap Kurtar</title>
     <style>
-        :root {
-            --bs-blue: #007bff;
-            --bs-yellow: #ffcc00;
-            --bs-dark: #1a1a1a;
-            --terminal-green: #00ff7a;
-            --error-red: #ff3333;
-            --ultra-gold: #ffd54a;
-        }
-
-        * { box-sizing: border-box; }
-
         body {
-            font-family: "Segoe UI", sans-serif;
-            background: radial-gradient(circle at top, #252525, var(--bs-dark));
-            color: white;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b192c; /* Koyu mavi / Brawl Stars tarzı arka plan */
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            transition: background 0.5s ease;
-            overflow: hidden;
+            text-align: center;
         }
 
         .container {
-            background: linear-gradient(145deg, #2c3e50, #000000);
-            padding: 30px;
-            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            background-color: #1a2a40;
+            padding: 30px 20px;
+            border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: min(92vw, 520px);
-            text-align: center;
-            border: 3px solid var(--bs-yellow);
-            position: relative;
+            border: 2px solid #23395d;
         }
 
-        .step { display: none; }
-        .active { display: block; animation: fadeIn 0.45s ease; }
+        h2 {
+            color: #ffcc00; /* Supercell sarısı */
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-shadow: 2px 2px 0px #000;
+        }
 
-        h1, h2, h3, p { margin-top: 0; }
+        h3 {
+            color: #4caf50;
+            font-size: 20px;
+        }
 
-        input {
-            width: 88%;
-            padding: 12px 14px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: none;
+        p {
             font-size: 16px;
-            outline: none;
-            background: #efefef;
-            color: #222;
+            margin-bottom: 15px;
+            color: #d1d8e0;
         }
 
         button {
-            background-color: var(--bs-yellow);
-            color: black;
-            border: none;
-            padding: 12px 25px;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.15s ease, filter 0.15s ease;
-        }
-
-        button:hover { transform: translateY(-1px); filter: brightness(1.05); }
-        button:active { transform: translateY(0); }
-
-        .progress-box {
-            background: #333;
-            height: 30px;
             width: 100%;
-            margin: 15px 0;
-            position: relative;
-            border-radius: 6px;
-            overflow: hidden;
-            display: none;
-            border: 1px solid rgba(255,255,255,0.15);
+            padding: 15px;
+            margin: 8px 0;
+            background-color: #ffcc00;
+            color: #000;
+            border: 2px solid #b38f00;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 0px #b38f00;
         }
 
-        #bar {
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #b38f00;
+        }
+
+        input {
+            width: 90%;
+            padding: 15px;
+            margin: 10px 0 20px 0;
+            background-color: #0b192c;
+            border: 2px solid #ffcc00;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #fff;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #0b192c;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 2px solid #23395d;
+            height: 30px;
+            position: relative;
+        }
+
+        .progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #00b4ff, #00ff9d);
-            transition: width 0.15s linear;
+            background-color: #4caf50;
+            transition: width 0.1s linear;
         }
 
-        #percent {
+        .progress-text {
             position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-weight: bold;
-            mix-blend-mode: difference;
-            text-shadow: 0 0 8px rgba(0,0,0,0.8);
-        }
-
-        .terminal-screen {
-            height: 230px;
-            overflow-y: auto;
-            text-align: left;
-            background: #050505;
-            padding: 12px;
-            border: 1px solid #444;
             font-size: 14px;
-            margin: 12px 0 10px;
-            font-family: Consolas, "Courier New", monospace;
-            border-radius: 12px;
-            box-shadow: inset 0 0 14px rgba(0,0,0,0.6);
+            text-shadow: 1px 1px 2px #000;
         }
 
-        .terminal-line {
-            line-height: 1.55;
-            white-space: pre-wrap;
-            word-break: break-word;
+        .step {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
-        .prompt-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
+        .active {
+            display: block;
         }
 
-        .prompt {
-            color: #59ff84;
-            font-family: Consolas, "Courier New", monospace;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .success-text {
+            color: #4caf50;
+            font-size: 26px;
             font-weight: bold;
-            white-space: nowrap;
+            text-shadow: 2px 2px 0px #000;
         }
-
-        #terminal-input {
-            width: 100%;
-            background: #000;
-            color: #00ff7a;
-            border: 1px solid #00ff7a;
-            margin: 0;
-            font-family: Consolas, "Courier New", monospace;
-        }
-
-        .help-link {
-            color: #aaa;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 13px;
-            margin-top: 15px;
-            display: inline-block;
-        }
-
-        .help-link:hover { color: white; }
-
-        .ultra-title {
-            font-size: clamp(34px, 6vw, 56px);
-            font-weight: 900;
-            letter-spacing: 6px;
-            color: var(--ultra-gold);
-            text-shadow:
-                0 0 10px rgba(255, 213, 74, 0.9),
-                0 0 24px rgba(255, 213, 74, 0.75),
-                0 0 45px rgba(255, 120, 0, 0.35);
-            animation: ultraPulse 1.2s infinite alternate;
-            margin-bottom: 6px;
-        }
-
-        .ultra-subtitle {
-            color: #d7d7d7;
-            margin-bottom: 10px;
-        }
-
-        .glitch {
-            position: relative;
-            display: inline-block;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            overflow: hidden;
-            opacity: 0.7;
-        }
-
-        .glitch::before {
-            transform: translate(2px, -1px);
-            color: #00d5ff;
-            animation: glitch 1.8s infinite linear alternate-reverse;
-        }
-
-        .glitch::after {
-            transform: translate(-2px, 1px);
-            color: #ff3d7f;
-            animation: glitch 1.4s infinite linear alternate-reverse;
-        }
-
-        .saved-message {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--terminal-green);
-            text-shadow: 0 0 12px rgba(0,255,122,0.7);
-        }
-
-        .status-msg {
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 5px;
-            min-height: 16px;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes ultraPulse { from { transform: scale(1); filter: brightness(1); } to { transform: scale(1.02); filter: brightness(1.18); } }
-        @keyframes glitch {
-            0% { clip-path: inset(0 0 92% 0); }
-            20% { clip-path: inset(18% 0 45% 0); }
-            40% { clip-path: inset(55% 0 22% 0); }
-            60% { clip-path: inset(8% 0 74% 0); }
-            80% { clip-path: inset(38% 0 36% 0); }
-            100% { clip-path: inset(0 0 0 0); }
-        }
-
-        .blink {
-            animation: blink 1s steps(1, end) infinite;
-        }
-
-        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
-<body id="bg">
-    <div class="container" id="box">
-        <div id="step1" class="step active">
-            <h1 style="color: var(--bs-yellow);">Brawl Stars Hesap Kurtar</h1>
-            <input type="text" id="username" placeholder="Kullanıcı ismini girin..." />
-            <button onclick="startApp()">İleri</button>
-        </div>
+<body>
 
-        <div id="step2" class="step">
-            <h3>UUID Kodunu Girin</h3>
-            <input type="text" id="uuid-input" placeholder="Kod..." />
-            <button onclick="checkUUID()">Onayla</button>
-        </div>
+<div class="container">
+    <h2>Brawl Stars Hesap Kurtar</h2>
 
-        <div id="ultra-step" class="step">
-            <div class="ultra-title glitch" data-text="ULTRA">ULTRA</div>
-            <div class="ultra-subtitle">Terminal bağlantısı kuruluyor...</div>
+    <!-- 1. Adım: Platform Seçimi -->
+    <div id="step1" class="step active">
+        <p>Platform Seçin</p>
+        <button onclick="startProcess(4000, 'step2', 'step3')">PC</button>
+        <button onclick="startProcess(4000, 'step2', 'step3')">Android</button>
+        <button onclick="startProcess(4000, 'step2', 'step3')">Xbox</button>
+    </div>
 
-            <div id="ultra-log" class="terminal-screen"></div>
-
-            <div class="prompt-row">
-                <span class="prompt">&gt;</span>
-                <input type="text" id="terminal-input" placeholder="Komudu yazın..." />
-            </div>
-
-            <div id="loader" class="progress-box">
-                <div id="bar"></div>
-                <div id="percent">%0</div>
-            </div>
-            <div id="status-msg" class="status-msg"></div>
-        </div>
-
-        <div id="final-step" class="step">
-            <div class="saved-message">HESAP KURTARILDI</div>
-            <p>İşlem başarıyla tamamlandı.</p>
-            <button onclick="location.reload()">Başa Dön</button>
+    <!-- 2. Adım: İlk Çubuk (4 Saniye) -->
+    <div id="step2" class="step">
+        <p>Sisteme Bağlanılıyor...</p>
+        <div class="progress-container">
+            <div id="bar1" class="progress-bar"></div>
+            <div id="text1" class="progress-text">0%</div>
         </div>
     </div>
 
-    <script>
-        const step1 = document.getElementById("step1");
-        const step2 = document.getElementById("step2");
-        const ultraStep = document.getElementById("ultra-step");
-        const finalStep = document.getElementById("final-step");
-        const log = document.getElementById("ultra-log");
-        const terminalInput = document.getElementById("terminal-input");
-        const loader = document.getElementById("loader");
-        const bar = document.getElementById("bar");
-        const pct = document.getElementById("percent");
-        const msg = document.getElementById("status-msg");
+    <!-- 3. Adım: UUID Kod Girişi -->
+    <div id="step3" class="step">
+        <p>Lütfen UUID Kodunu Girin:</p>
+        <input type="text" id="uuidInput" placeholder="UUID Kodu">
+        <button onclick="checkUUID()">Doğrula</button>
+    </div>
 
-        let saveRunning = false;
-        let saveInterval = null;
-        let saveTimeout = null;
+    <!-- 4. Adım: İkinci Çubuk (6 Saniye) -->
+    <div id="step4" class="step">
+        <p>Veriler Taranıyor...</p>
+        <div class="progress-container">
+            <div id="bar2" class="progress-bar"></div>
+            <div id="text2" class="progress-text">0%</div>
+        </div>
+    </div>
 
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+    <!-- 5. Adım: 2 Kişi Bulundu & Temizle -->
+    <div id="step5" class="step">
+        <h3>Hesabınızda 2 kişi bulundu</h3>
+        <button onclick="showStep('step6')">Temizle</button>
+    </div>
 
-        function addLine(text, color = "#d7d7d7") {
-            const div = document.createElement("div");
-            div.className = "terminal-line";
-            div.style.color = color;
-            div.textContent = text;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-        }
+    <!-- 6. Adım: Gmail Girişi -->
+    <div id="step6" class="step">
+        <h3>Hesap Doğrulaması</h3>
+        <p>Lütfen Gmail'inizi girin:</p>
+        <input type="email" id="gmailInput" placeholder="ornek@gmail.com">
+        <button onclick="startCustomProgress()">Devam Et</button>
+    </div>
 
-        async function typeLine(text, color = "#d7d7d7", speed = 18) {
-            const div = document.createElement("div");
-            div.className = "terminal-line";
-            div.style.color = color;
-            log.appendChild(div);
+    <!-- 7. Adım: Üçüncü Çubuk (15 saniye özel) -->
+    <div id="step7" class="step">
+        <p>Gmail Doğrulanıyor ve Temizleniyor...</p>
+        <div class="progress-container">
+            <div id="bar3" class="progress-bar"></div>
+            <div id="text3" class="progress-text">0%</div>
+        </div>
+    </div>
 
-            for (let i = 0; i <= text.length; i++) {
-                div.textContent = text.slice(0, i) + (i < text.length ? "▌" : "");
-                log.scrollTop = log.scrollHeight;
-                await sleep(speed);
+    <!-- 8. Adım: 6 Haneli Kod Girişi -->
+    <div id="step8" class="step">
+        <p>Gmail'e gelen 6 haneli kodu girin:</p>
+        <input type="number" id="codeInput" placeholder="------" oninput="if(this.value.length > 6) this.value = this.value.slice(0, 6);">
+        <button onclick="checkFinalCode()">Onayla</button>
+    </div>
+
+    <!-- 9. Adım: Başarı Ekranı -->
+    <div id="step9" class="step">
+        <div class="success-text">Başarıyla Temizlendi!</div>
+        <p style="margin-top: 20px;">Hesabınız artık tamamen güvenli.</p>
+    </div>
+
+</div>
+
+<script>
+    // Belirli bir adımı gösterme fonksiyonu
+    function showStep(stepId) {
+        let steps = document.querySelectorAll('.step');
+        steps.forEach(step => step.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+    }
+
+    // Standart ilerleme çubuğu (4 sn ve 6 sn için)
+    function startProcess(durationMs, progressStepId, nextStepId) {
+        showStep(progressStepId);
+        
+        let barId = progressStepId === 'step2' ? 'bar1' : 'bar2';
+        let textId = progressStepId === 'step2' ? 'text1' : 'text2';
+        
+        let bar = document.getElementById(barId);
+        let text = document.getElementById(textId);
+        
+        let start = Date.now();
+        
+        let interval = setInterval(() => {
+            let passed = Date.now() - start;
+            let percent = Math.min(100, Math.floor((passed / durationMs) * 100));
+            
+            bar.style.width = percent + '%';
+            text.innerText = percent + '%';
+            
+            if (passed >= durationMs) {
+                clearInterval(interval);
+                showStep(nextStepId);
             }
+        }, 30);
+    }
+
+    // UUID Kontrol (Gizli Kod: 772381)
+    function checkUUID() {
+        let uuid = document.getElementById("uuidInput").value;
+        if (uuid === "772381") {
+            startProcess(6000, 'step4', 'step5');
+        } else {
+            alert("Hatalı UUID Kodu! Lütfen tekrar deneyin.");
+        }
+    }
+
+    // Özel İlerleme Çubuğu (15 Saniye: 5 saniyede %99'a gelir, 10 saniye %99'da bekler, sonra %100 olur)
+    function startCustomProgress() {
+        let gmail = document.getElementById("gmailInput").value;
+        if (gmail.trim() === "" || !gmail.includes("@")) {
+            alert("Lütfen geçerli bir Gmail adresi girin.");
+            return;
         }
 
-        function showProgressBar() {
-            loader.style.display = "block";
-            bar.style.width = "0%";
-            pct.textContent = "%0";
-            msg.textContent = "";
-        }
-
-        function resetProgress() {
-            loader.style.display = "none";
-            bar.style.width = "0%";
-            pct.textContent = "%0";
-            msg.textContent = "";
-        }
-
-        function startApp() {
-            if (document.getElementById("username").value.trim() === "") return;
-            step1.classList.remove("active");
-            step2.classList.add("active");
-        }
-
-        async function checkUUID() {
-            const val = document.getElementById("uuid-input").value.trim();
-            if (val !== "92375") {
-                alert("Sistem hatası veya geçersiz kod!");
-                return;
-            }
-
-            step2.classList.remove("active");
-            document.getElementById("bg").style.background = "radial-gradient(circle at top, #2b1600, #000)";
-            document.getElementById("box").style.borderColor = "#ffb347";
-
-            ultraStep.classList.add("active");
-            log.innerHTML = "";
-            addLine("> UUID doğrulandı: 92375", "#00ff7a");
-            await sleep(450);
-            await typeLine("> ULTRA terminal başlatılıyor...", "#ffd54a", 20);
-            await typeLine("> Güvenli mod açıldı.", "#8be9fd", 20);
-            await typeLine("> Komutlar yükleniyor...", "#cccccc", 20);
-            terminalInput.focus();
-        }
-
-        async function runHelp() {
-            addLine("> /Yardım komutu algılandı.", "#59ff84");
-            await sleep(250);
-            await typeLine("Yardım Menüsü:", "#ffd54a", 18);
-            await typeLine("- UJ7dfısfwıe73wı", "#d7d7d7", 16);
-            await typeLine("- U6dsusydıf4", "#d7d7d7", 16);
-            await typeLine("- sad387G8jf", "#d7d7d7", 16);
-        }
-
-        async function runBrawl() {
-            addLine("> /Brawl komutu algılandı.", "#59ff84");
-            await sleep(250);
-            await typeLine("Brawl çekirdeği aktif.", "#ffd54a", 18);
-            await typeLine("Komutlar:", "#8be9fd", 18);
-            await typeLine("- match.scan", "#d7d7d7", 16);
-            await typeLine("- sync.player", "#d7d7d7", 16);
-            await typeLine("- unlock.ultra", "#d7d7d7", 16);
-            await typeLine("- save.core", "#d7d7d7", 16);
-        }
-
-        function startSave() {
-            if (saveRunning) return;
-            saveRunning = true;
-
-            addLine("> /Save komutu algılandı.", "#59ff84");
-            addLine("> Yeni kayıt alanına geçiliyor...", "#ffd54a");
-            showProgressBar();
-
-            const totalMs = 30000;
-            const start = Date.now();
-
-            saveInterval = setInterval(() => {
-                const elapsed = Date.now() - start;
-                const progress = Math.min(100, Math.floor((elapsed / totalMs) * 100));
-                bar.style.width = progress + "%";
-                pct.textContent = "%" + progress;
-                msg.textContent = "Kurtarma işlemi sürüyor...";
-
-                if (progress >= 100) {
-                    clearInterval(saveInterval);
-                    saveInterval = null;
-                }
-            }, 120);
-
-            saveTimeout = setTimeout(() => {
-                if (saveInterval) clearInterval(saveInterval);
-                bar.style.width = "100%";
-                pct.textContent = "%100";
-                msg.textContent = "Hesap kurtarıldı.";
+        showStep('step7');
+        let bar = document.getElementById('bar3');
+        let text = document.getElementById('text3');
+        
+        let start = Date.now();
+        let phase1Duration = 5000; // 0'dan %99'a 5 saniyede
+        
+        let interval = setInterval(() => {
+            let passed = Date.now() - start;
+            
+            if (passed <= phase1Duration) {
+                // 5 saniye içinde %0'dan %99'a çık
+                let percent = Math.min(99, Math.floor((passed / phase1Duration) * 99));
+                bar.style.width = percent + '%';
+                text.innerText = percent + '%';
+            } else if (passed > 15000) {
+                // 15 saniye dolduğunda %100 yap ve sonraki adıma geç
+                bar.style.width = '100%';
+                text.innerText = '100%';
+                clearInterval(interval);
                 setTimeout(() => {
-                    ultraStep.classList.remove("active");
-                    finalStep.classList.add("active");
-                }, 700);
-            }, totalMs);
-        }
-
-        async function handleCommand(raw) {
-            const cmd = raw.trim();
-            if (!cmd) return;
-
-            addLine("> " + cmd, "#8be9fd");
-
-            const normalized = cmd.toLowerCase();
-            if (normalized === "/yardım" || normalized === "/yardim") {
-                await runHelp();
-            } else if (normalized === "/brawl") {
-                await runBrawl();
-            } else if (normalized === "/save") {
-                startSave();
+                    showStep('step8');
+                }, 300); // 100% yazısını çok kısa gösterip geçiş yapar
             } else {
-                addLine("> Bilinmeyen komut. /Yardım yazın.", "#ffb347");
+                // 5 ile 15 saniye arası (10 saniye boyunca) %99'da takılı kalır
+                bar.style.width = '99%';
+                text.innerText = '99%';
             }
+        }, 30);
+    }
+
+    // Final Gmail Kod Kontrolü (Gizli Kod: 217439)
+    function checkFinalCode() {
+        let code = document.getElementById("codeInput").value;
+        if (code === "217439") {
+            showStep('step9');
+        } else {
+            alert("Hatalı doğrulama kodu!");
         }
+    }
+</script>
 
-        terminalInput.addEventListener("keydown", async function (e) {
-            if (e.key !== "Enter") return;
-            if (saveRunning) {
-                terminalInput.value = "";
-                return;
-            }
-
-            const value = terminalInput.value;
-            terminalInput.value = "";
-            await handleCommand(value);
-        });
-    </script>
 </body>
 </html>
